@@ -1,0 +1,76 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2154
+
+MARVIM - MAcro Repository for VIM
+
+"Give your most complex macros a name and store it for future recall and use"
+
+Problem statement(s): 
+-------------------------------
+   * Can not remember those complex VIM macro sequences you use frequently?
+   * Wish you could save those macros beyond your immediate session? 
+   * Wish you could share your VIM macros with each other?
+   * Why not templates as well in the same script?
+
+Features
+------------
+    * Recording of VIM macros into persistent storage for future use
+    * Auto-complete based recursive search and load of stored VIM macros
+    * Visually select and save templates into persistent storage
+    * Macro namespaces, to permit organization of macros 
+    * Support for a default namespace based on filetype
+    * Supports a shared macro repository for a team on a shared directory
+    * Macro menu items in GVIM version for all main actions
+
+Hotkeys 
+-----------
+<F2>            - Find and execute a macro or insert template from repository
+Visual <F2> - Replays last macro for each line selected
+<F3>             - Save default macro register by name to the macro repository 
+Visual <F3>  - Save selection as template by name to the macro repository 
+<Tab>            - On the Macro command line for cycling through autocomplete
+<Control>+D - On the Macro command line for listing autocomplete options
+
+Usage:
+----------
+o Store a new macro to the repository
+
+1)  record macro as usual into q register 
+    (i.e. qq..<macro keystrokes>..q)
+2)  press save macro key <F3> (default) in normal mode
+3)  enter the macro name when prompted after the prefix 
+    (a prefix will be provided based on the filetype)
+4)  macro is now store in the repository
+
+o Save template into repository
+
+1)  select area you want to save in visual mode
+2)  press the macro save button <F3> (default) in visual mode
+3)  enter the template name when prompted
+    (a prefix will be provided based on the filetype)
+4)  template is now saved in repository
+
+o Recall macro/template through a search
+
+1)  press the macro find key <F2> (default) in normal mode
+2)  enter a search string when prompted 
+    (a prefix will be put by default, which can be deleted)
+3)  press <Tab> or <Control-D> to auto-complete until you find the macro
+4)  macro is now run and also loaded for further use into the q register
+
+o Replay last loaded macro on multiple lines for each line
+
+1)  select the area you want the macro to run on in visual mode
+2)  press the macro find key <F3> (default) in visual mode
+3)  macro in q register is replayed for every line
+
+Bugs, Patches, Help and Suggestions
+-----------------------------------------------------
+If you have some feedback, find any bugs or need some help, please send
+and email to chamindra [at] gmail.com and put the word marvim in the
+subject line. 
+
+Further information
+--------------------------
+Read the README file or goto http://chamindra.googlepages.com/marvim
+
+

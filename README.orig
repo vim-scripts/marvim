@@ -1,0 +1,54 @@
+
+MARVIM - MAcro Repository for VIM
+"Freeze? I'm a robot. I'm not a refrigerator" - Marvin the Paranoid Android
+http://chamindra.googlepages.com/marvim
+
+Description: Macro and Template saving, lookup and launch script for VIM. 
+Version:     0.1 Alpha
+Date:        13 FEB 2008
+Copyright:   Chamindra de Silva 
+License:     GPL v2
+
+Justification: Helps us forgetful/lazy types to store complex VIM 
+macros and templates that we frequently use into persistent storage 
+in form of a repository for future search and usage.
+
+Features:
+
+    * Recording of VIM macros into persistent storage for future use
+    * Quick search based recall and load of stored VIM macros
+    * Visually select and save templates into persistent storage
+    * Quick search based insert of stored templates
+
+Installation:
+
+   1. Download marvim.vim from the download link
+   2. Save marvim into your VIM script directory
+   3. Create a directory .marvim in your home directory to store your 
+      macros and templates.
+   4. (optional) modify the hotkeys in the marvim.vim script after 
+      the ==HOTKEYS== line
+
+Usage:
+
+    * <F2>  - SAVE MACRO stored in 'c' register by name to a macro 
+              directory in normal mode
+    * Visual <F2> - SAVE a TEMPLATE by name to the macro directory 
+                    in visual mode
+    * <F3>  - search and EXECUTE a MACRO or insert TEMPLATE in the 
+              macro directory. Load the MACRO into 'c' register for later use
+    * Visual <F3> - in visual mode REPLAYS last loaded MACRO for each line
+
+Hints:
+
+    * Some examples scripts are included for you to copy to your
+      marvim script directory and recall
+    * Decide on a naming convention for your macros and templates 
+      to make it easy for the search.
+    * Macro register 'c' is used by default but you can change this 
+      by modifying the s:macro_register variable
+    * You can change the hotkeys <F3>, <F2> by modifying the 4 lines 
+      after '==HOTKEYS==' in the script
+
+If you like it please send patches, template/macro repositories 
+and improvements to the script to http://chamindra.googlepages.com/marvim
