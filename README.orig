@@ -4,14 +4,13 @@ MARVIM - MAcro Repository for VIM
 http://chamindra.googlepages.com/marvim
 
 Description: Macro and Template saving, lookup and launch script for VIM. 
-Version:     0.1 Alpha
-Date:        13 FEB 2008
+Version:     0.2 Alpha
+Date:        15 FEB 2008
 Copyright:   Chamindra de Silva 
 License:     GPL v2
 
-Justification: Helps us forgetful/lazy types to store complex VIM 
-macros and templates that we frequently use into persistent storage 
-in form of a repository for future search and usage.
+Justification: Helps us VIM users to store complex VIM macros 
+and templates into persistent storage for future search and load.
 
 Features:
 
@@ -19,36 +18,77 @@ Features:
     * Quick search based recall and load of stored VIM macros
     * Visually select and save templates into persistent storage
     * Quick search based insert of stored templates
+    * Recursive search of macro repository directories 
+    * Cross share your macros with other users by copying repositories 
+    * Macro menu items for all main actions
 
-Installation:
+Installation
+------------
 
-   1. Download marvim.vim from the download link
-   2. Save marvim into your VIM script directory
-   3. Create a directory .marvim in your home directory to store your 
-      macros and templates.
-   4. (optional) modify the hotkeys in the marvim.vim script after 
-      the ==HOTKEYS== line
+o Download Marvim to your VIM plugin ($VIMRUNTIME/plugin) directory 
+  or source it explicity. Below is an example if you place it in 
+  the home directory
 
-Usage:
+  source $HOME/marvim.vim 
 
-    * <F2>  - SAVE MACRO stored in 'c' register by name to a macro 
-              directory in normal mode
-    * Visual <F2> - SAVE a TEMPLATE by name to the macro directory 
-                    in visual mode
-    * <F3>  - search and EXECUTE a MACRO or insert TEMPLATE in the 
-              macro directory. Load the MACRO into 'c' register for later use
-    * Visual <F3> - in visual mode REPLAYS last loaded MACRO for each line
+o Start vim and this will automatically create the base marvim macro 
+  repository in your home directory. Based on the OS it will be 
+  located as follows:
 
-Hints:
+  UNIX      ~/.marvim  
+  WINDOWS   C:\Document and Settings\Username\marvim 
 
-    * Some examples scripts are included for you to copy to your
-      marvim script directory and recall
-    * Decide on a naming convention for your macros and templates 
-      to make it easy for the search.
-    * Macro register 'c' is used by default but you can change this 
-      by modifying the s:macro_register variable
-    * You can change the hotkeys <F3>, <F2> by modifying the 4 lines 
-      after '==HOTKEYS==' in the script
+o (optional) Copy predefined macro/template directories into the base 
+  marvin macro directory. Marvim uses recursive directory search so 
+  you can nest the directories as you wish.
 
-If you like it please send patches, template/macro repositories 
-and improvements to the script to http://chamindra.googlepages.com/marvim
+o (optional) if you want to change the default hotkeys see below
+       
+Default Hotkeys
+---------------
+  <F2>        - Find and execute a macro or insert template from repository
+  Visual <F2> - Replays last macro for each line selected
+  <F3>        - Save default macro register by name to the macro repository 
+  Visual <F3> - Save selection as template by name to the macro repository 
+
+Changing the default hotkeys and register
+-----------------------------------------
+Place the following lines in your vimrc before the location you source
+the marvim.vim script. Below is an example:
+
+  let marvim_find_key = '<Space>'
+  let marvim_store_key = 'ms'
+  let marvim_register = 'c'
+  source $HOME/marvim.vim   " omit if marvim.vim is in the plugin dir
+
+Tips
+----
+ o <Space> can be very effective as the macro find key
+ o use a naming convention for your macros to make it easy to find. e.g.:
+
+   php-if-block
+   php-strip-tags
+   php-mysql-select-block
+   php-mysql-update-block
+
+Change Log
+----------
+v0.1.1
+- Made script windows compatible
+- Makes the macro home directory if it does not exist
+- Recursively looks up base repository subdirectories for macros
+- Creates a macro menu for the GUI versions
+- Changed defauly macro input register to q
+- Made it easy to define configuration details in vimrc
+- Abstracted hotkeys so that they can be defined in the vimrc easily
+- Fixed the breaking on spaces in directory paths
+- Changed template extension to mvt for ease
+- Changed naming conventions to avoid namespace conflict
+v0.1
+- Platform independant script (almost ;-)
+- recording of vim version with macro 
+- redefinition of macro_home and macro_register
+
+Todo
+- check vim version number when running macro
+
