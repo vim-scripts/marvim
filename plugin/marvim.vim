@@ -10,8 +10,8 @@
 "  Description: MAcro Repository Vim Plugin
 "   Maintainer: Chamindra de Silva <chamindra@gmail.com> 
 "          URL: http://chamindra.googlepages.com/marvim 
-"  Last Change: 2008 Feb 15
-"      Version: 0.2 Alpha
+"  Last Change: 2008 Sep 15
+"      Version: 0.3 Beta
 "
 "        Usage: 
 "
@@ -37,18 +37,27 @@
 "
 " o (optional) if you want to change the default hotkeys see below
 "        
-" Default Hotkeys
-" ---------------
+" Actions 
+" -------
 "   <F2>        - Find and execute a macro or insert template from repository
 "   Visual <F2> - Replays last macro for each line selected
 "   <F3>        - Save default macro register by name to the macro repository 
 "   Visual <F3> - Save selection as template by name to the macro repository 
+" Macro Namespace:
+" ----------------
+" You can organize the macros by a namespace. To save a macro in the name
+" space X, simply us X:macro_name when saving the macro. This will create
+" a subdirectory called X in your mavim repository as save this macro there
+" You can also create namespaces by putting a collection of macros in a
+" subdirectory of the mavim repository. This will permit you to organize
+" your macros accordingly
 "
-" Changing the default hotkeys and register
+" Changing the default hotkeys, location and register
 " -----------------------------------------
-" Place the following lines in your vimrc before the location you source
-" the marvim.vim script. Below is an example:
+" Optionally place the following lines in your vimrc before the location 
+" you source the marvim.vim script. Below is an example:
 "
+"   let marvim_store = '/usr/local/share/projectX/marvim'
 "   let marvim_find_key = '<Space>'
 "   let marvim_store_key = 'ms'
 "   let marvim_register = 'c'
@@ -57,15 +66,37 @@
 " Tips
 " ----
 "  o <Space> can be very effective as the macro find key
+"  o use the namespaces to organize a directory for each language
 "  o use a naming convention for your macros to make it easy to find. e.g.:
 "
-"    php-if-block
-"    php-strip-tags
-"    php-mysql-select-block
-"    php-mysql-update-block
+"    php:if-block
+"    php:strip-tags
+"    php:mysql-select-block
+"    php:mysql-update-block
+" 
+"  o if multiple people are working on the same project, consider a shared
+"    marvim store to share templates and macros to improve team
+"    productivity
+"
+"  o share your marvim marco stores with each other and also with the
+"    central repository at http://chamindra.googlepages.com/marvim
+"
+" Bugs, Patches, Help and Suggestions
+" -----------------------------------
+" If you find any bugs, have new patches or need some help, please send
+" and email to chamindra [at] opensource.lk and put the word marvim in the
+" subject line. Also we welcome you to share your repositories.
 "
 " Change Log
 " ----------
+" v0.3
+" - New namespace features for macro that map to macro sub-directories
+" - Supported the creation of macros and templates in a namespace
+" - Creates namespace directories if they do not exist
+" - Added the ability to point to a different macro store
+" - The above permits a shared macro/template repository within a team
+" - Refactored code to make macro and template saving a function
+" - Fixed bug on windows listing of macros without whole path name
 " v0.2
 " - Made script windows compatible
 " - Makes the macro home directory if it does not exist
@@ -137,18 +168,19 @@ else " assume UNIX based
 endif
 
 " TODO or reset the home directory if it has been defined by the user
-"if exists('marvim_store')
-"    if g:marvim_store[-1:] != s:path_seperator
-"        let s:macro_home = g:marvim_store.s:path_seperator
-"    else
-"        let s:macro_home = g:marvim_store
-"    endif
-"endif
+if exists('marvim_store')
+    if g:marvim_store[-1:] != s:path_seperator
+        let s:macro_home = g:marvim_store.s:path_seperator
+    else
+        let s:macro_home = g:marvim_store
+    endif
+endif
 
 " create the repository directory if it does not exist
 if !isdirectory(s:macro_home)
 
-    let s:tmp = mkdir(s:macro_home)
+    " need to strip end slash before call the mkdir function
+    call mkdir(strpart(s:macro_home, 0 , strlen(s:macro_home)-1), "p")
     " let s:tmp = system("mkdir \"".s:macro_home."\"")  " hard way for windows
 endif
 
@@ -166,9 +198,10 @@ function! Marvim_template_store()
 
     let l:listtmp = split(@@,'\n') " get default yank buffer
     let l:template_name = input('Enter Template Name : ') 
-    call writefile(l:listtmp, s:macro_home.l:template_name.s:text)
-    "let l:text = getreg(g:marvim_register)
-    "call setreg(g:marvim_register, 'a'.l:text)
+
+    call Marvim_file_save(l:template_name, l:listtmp, s:text)
+    
+    echo ''
 
 endfunction
 
@@ -176,18 +209,42 @@ endfunction
 function! Marvim_macro_store()
 
     let l:macro_name = input('Enter Macro Name : ') 
-    call Marvim_file_save(l:macro_name)
+
+    "let l:listtmp = [@c] " get the macro from register c
+    let l:listtmp = [getreg(g:marvim_register)]
+
+    call Marvim_file_save(l:macro_name, l:listtmp, s:ext)
     " clear the command line
     echo '' 
 
 endfunction
 
 " The macro save function
-function! Marvim_file_save(macro_name)
+function! Marvim_file_save(macro_name, data, exttype)
 
-    "let l:listtmp = [@c] " get the macro from register c
-    let l:listtmp = [getreg(g:marvim_register)]
-    call writefile(l:listtmp, s:macro_home.a:macro_name.s:ext, 'b')
+    " create name space from marvim base directory
+    let l:name = tr(a:macro_name, ":", s:path_seperator)
+
+    let l:fullfilename = s:macro_home.l:name.a:exttype
+
+    let l:lastslash = strridx(l:fullfilename, s:path_seperator)
+
+    let l:dirname = strpart( l:fullfilename, 0, l:lastslash)
+
+    if !isdirectory(l:dirname) 
+
+        call mkdir (l:dirname, "p")
+
+    endif
+
+    if ( a:exttype == s:ext ) " if this is a macro
+
+        call writefile(a:data, l:fullfilename, 'b')
+
+    else " else if it a template
+
+        call writefile(a:data, l:fullfilename)
+    endif
 
 endfunction
 
@@ -237,14 +294,16 @@ function! Marvim_search()
         let l:item_count = l:item_count + 1
 
         " get the filename
-        let l:dir_split = split (l:item, s:path_seperator) 
-        let l:filename = l:dir_split[-1]
+        "let l:dir_split = split (l:item, s:macro_home) 
+        let l:file_split = strpart(l:item, strlen(s:macro_home))
+        let l:filename = tr(l:file_split, s:path_seperator, ":")
 
         " remove trailing extension
         let l:name_split = split (l:filename, '\.') " TODO: can break on multiple .
 
         " display each option in a list with the type of macro
         echo l:item_count.'. '.l:name_split[0].' ('.l:name_split[-1].')' 
+        "echo l:item_count.'. '.l:item
 
    endfor 
 

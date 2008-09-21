@@ -4,8 +4,8 @@ MARVIM - MAcro Repository for VIM
 http://chamindra.googlepages.com/marvim
 
 Description: Macro and Template saving, lookup and launch script for VIM. 
-Version:     0.2 Alpha
-Date:        15 FEB 2008
+Version:     0.3 Beta
+Last Update: 15 SEP 2008
 Copyright:   Chamindra de Silva 
 License:     GPL v2
 
@@ -19,6 +19,9 @@ Features:
     * Visually select and save templates into persistent storage
     * Quick search based insert of stored templates
     * Recursive search of macro repository directories 
+    * Macro namespaces, supporting the organization of macros 
+      (in sub-directories)
+    * Supports a shared macro repository for a team on a shared directory
     * Cross share your macros with other users by copying repositories 
     * Macro menu items for all main actions
 
@@ -31,6 +34,14 @@ o Download Marvim to your VIM plugin ($VIMRUNTIME/plugin) directory
 
   source $HOME/marvim.vim 
 
+o Configure Macro with different macro hotkeys (default F2,F3), 
+  repository location (see below) or macro register (deault register q)
+
+  let marvim_store = '/usr/local/share/projectX/marvim'
+  let marvim_find_key = '<Space>'
+  let marvim_store_key = 'ms'
+  let marvim_register = 'c'
+
 o Start vim and this will automatically create the base marvim macro 
   repository in your home directory. Based on the OS it will be 
   located as follows:
@@ -41,8 +52,6 @@ o Start vim and this will automatically create the base marvim macro
 o (optional) Copy predefined macro/template directories into the base 
   marvin macro directory. Marvim uses recursive directory search so 
   you can nest the directories as you wish.
-
-o (optional) if you want to change the default hotkeys see below
        
 Default Hotkeys
 ---------------
@@ -51,29 +60,35 @@ Default Hotkeys
   <F3>        - Save default macro register by name to the macro repository 
   Visual <F3> - Save selection as template by name to the macro repository 
 
-Changing the default hotkeys and register
------------------------------------------
-Place the following lines in your vimrc before the location you source
-the marvim.vim script. Below is an example:
-
-  let marvim_find_key = '<Space>'
-  let marvim_store_key = 'ms'
-  let marvim_register = 'c'
-  source $HOME/marvim.vim   " omit if marvim.vim is in the plugin dir
-
 Tips
 ----
  o <Space> can be very effective as the macro find key
  o use a naming convention for your macros to make it easy to find. e.g.:
 
-   php-if-block
-   php-strip-tags
-   php-mysql-select-block
-   php-mysql-update-block
+   php:if-block
+   php:strip-tags
+   php:mysql-select-block
+   php:mysql-update-block
+
+Bugs, Patches, Help and Suggestions
+-----------------------------------
+If you find any bugs, have new patches or need some help, please send
+and email to chamindra [at] opensource.lk and put the word marvim in the
+subject line. Also we welcome you to share your repositories.
+
+Few examples at http://chamindra.googlepages.com/marvim
 
 Change Log
-----------
-v0.1.1
+---------- 
+v0.3 Beta
+- New namespace features for macro that map to macro sub-directories
+- Supported the creation of macros and templates in a namespace
+- Creates namespace directories if they do not exist
+- Added the ability to point to a different macro store
+- The above permits a shared macro/template repository within a team
+- Refactored code to make macro and template saving a function
+- Fixed bug on windows listing of macros without whole path name
+v0.2 Alpha
 - Made script windows compatible
 - Makes the macro home directory if it does not exist
 - Recursively looks up base repository subdirectories for macros
@@ -84,7 +99,7 @@ v0.1.1
 - Fixed the breaking on spaces in directory paths
 - Changed template extension to mvt for ease
 - Changed naming conventions to avoid namespace conflict
-v0.1
+v0.1 Alpha
 - Platform independant script (almost ;-)
 - recording of vim version with macro 
 - redefinition of macro_home and macro_register
