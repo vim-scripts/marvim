@@ -39,7 +39,7 @@ o Store a new macro to the repository
 2)  press save macro key <F3> (default) in normal mode
 3)  enter the macro name when prompted after the prefix 
     (a prefix will be provided based on the filetype)
-4)  macro is now store in the repository
+4)  macro is now stored in the repository
 
 o Save template into repository
 
@@ -47,7 +47,7 @@ o Save template into repository
 2)  press the macro save button <F3> (default) in visual mode
 3)  enter the template name when prompted
     (a prefix will be provided based on the filetype)
-4)  template is now saved in repository
+4)  template is now saved in the repository
 
 o Recall macro/template through a search
 
