@@ -27,6 +27,7 @@ Hotkeys
 Visual <F2> - Replays last macro for each line selected
 <F3>             - Save default macro register by name to the macro repository 
 Visual <F3>  - Save selection as template by name to the macro repository 
+<F4>            - Find and load a macro to an specific register.
 <Tab>            - On the Macro command line for cycling through autocomplete
 <Control>+D - On the Macro command line for listing autocomplete options
 
@@ -49,13 +50,24 @@ o Save template into repository
     (a prefix will be provided based on the filetype)
 4)  template is now saved in repository
 
-o Recall macro/template through a search
+o Recall/Run macro/template through a search 
 
 1)  press the macro find key <F2> (default) in normal mode
 2)  enter a search string when prompted 
     (a prefix will be put by default, which can be deleted)
 3)  press <Tab> or <Control-D> to auto-complete until you find the macro
 4)  macro is now run and also loaded for further use into the q register
+
+o Load macro/template into a register through a search 
+
+Note: This capability is very utile to create macros that uses other macros
+
+1)  press the macro find key <F4> (default) in normal mode
+2)  enter a search string when prompted 
+    (a prefix will be put by default, which can be deleted)
+3)  press <Tab> or <Control-D> to auto-complete until you find the macro and press enter
+4)  inform the register key you want your macro to be loaded
+5)  macro is now loaded into the register informed
 
 o Replay last loaded macro on multiple lines for each line
 
