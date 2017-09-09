@@ -9,8 +9,8 @@
 "  Description: MAcro Repository Vim Plugin
 "   Maintainer: Chamindra de Silva <chamindra@gmail.com> 
 "          URL: http://chamindra.googlepages.com/marvim 
-"  Last Change: 2008 Sep 28 
-"      Version: 0.4 Beta
+"  Last Change: 2016 Sep 09 
+"      Version: 0.5 Beta
 "
 "        Usage: 
 "
@@ -42,6 +42,7 @@
 " Visual <F2> - Replays last macro for each line selected
 " <F3>        - Save default macro register by name to the macro repository 
 " Visual <F3> - Save selection as template by name to the macro repository 
+" <F4>        - Find and load a macro to an specific register.
 " <Tab>       - On the Macro command line for cycling through autocomplete
 " <Control>+D - On the Macro command line for listing autocomplete options
 "
@@ -72,6 +73,15 @@
 " 3)  press <tab> or <Control-D> to auto-complete until you find the macro
 " 4)  macro is now run and also loaded for further use into the q register
 " 
+" o Load macro/template into a register through a search 
+"
+" 1)  press the macro find key <F4> (default) in normal mode
+" 2)  enter a search string when prompted 
+"     (a prefix will be put by default, which can be deleted)
+" 3)  press <Tab> or <Control-D> to auto-complete until you find the macro and press enter
+" 4)  inform the register key you want your macro to be loaded
+" 5)  macro is now loaded into the register informed
+"
 " o Replay last loaded macro on multiple lines for each line
 " 
 " 1)  select the area you want the macro to run on in visual mode
@@ -119,6 +129,12 @@
 "
 "  o share your marvim marco stores with each other and also with the
 "    central repository at http://chamindra.googlepages.com/marvim
+"
+"  o use the load capability to create nestled macros by loading macros
+"    into different buffer keys and after just executing the buffer keys.
+"
+"  o use the load capability to create a developement environemt where you
+"    have all keys pre-programmed with your favorite macros.
 "
 " Bugs, Patches, Help and Suggestions:
 " ------------------------------------
@@ -184,10 +200,13 @@ if !exists('marvim_store_key')
     let g:marvim_store_key = '<F3>'
 endif
 
+if !exists('marvim_load_key')
+    let g:marvim_load_key = '<F4>'
+endif
+
 if !exists('marvim_prefix')
     let g:marvim_prefix = 1 
 endif
-
 
 " Define all mappings to functions provided keys are available
 " Define all mappings to functions provided keys are available
@@ -196,14 +215,16 @@ endif
     exec 'nnoremap '.g:marvim_store_key.' :call Marvim_macro_store()<CR>'
     "exec 'nnoremap '.g:marvim_store_key.' :call Marvim_template_store()<CR>'
     exec 'vnoremap '.g:marvim_store_key.' y:call Marvim_template_store()<CR>'
-    exec 'nnoremap '.g:marvim_find_key.' :call Marvim_search()<CR>'
+    exec 'nnoremap '.g:marvim_find_key.' :call Marvim_search("execute")<CR>'
     exec 'vnoremap '.g:marvim_find_key.' :norm@'.g:marvim_register.'<CR>' 
+    exec 'nnoremap '.g:marvim_load_key.' :call Marvim_search("load")<CR>'
 " endif
 
     "exec 'vnoremap '.g:marvim_store_key.' :<C-U>call Marvim_visual_template_store()<CR>'
 
 if has('menu')
-    menu &Macro.&Find :call Marvim_search()<CR>
+    menu &Macro.&Load :call Marvim_search('load')<CR>
+    menu &Macro.&Find :call Marvim_search('execute')<CR>
     nmenu &Macro.&Store\ Macro :call Marvim_macro_store()<CR>
     vmenu &Macro.&Store\ Template y:call Marvim_template_store()<CR>
     nmenu &Macro.&Store\ Template :call Marvim_template_store()<CR>
@@ -388,6 +409,17 @@ function! Marvim_file_save(macro_name, data, exttype)
 
 endfunction
 
+" Load the macro file into a register
+" @param macro_file - full path to the macro file
+" @param register - destination register
+function! Marvim_file_load(macro_file, register)
+
+    " read the macro file into the register and run it
+    let l:macro_content = readfile(a:macro_file,'b')
+    call setreg(a:register,l:macro_content[0]) 
+
+endfunction
+
 " Run the macro file
 " @param macro_file - full path to the macro file
 function! Marvim_file_run(macro_file)
@@ -410,9 +442,7 @@ function! Marvim_file_run(macro_file)
     else  " a vim macro
         " execute 'so! '.s:macro_home.a:macro_name.s:ext
         
-        " read the macro file into the register and run it
-        let l:macro_content = readfile(a:macro_file,'b')
-        call setreg(g:marvim_register,l:macro_content[0]) 
+        call Marvim_file_load(a:macro_file, g:marvim_register)
         silent execute 'normal @'.g:marvim_register
         "echo 'Ran Macro '.a:macro_file
 
@@ -421,7 +451,7 @@ function! Marvim_file_run(macro_file)
 endfunction
 
 " Macro Search function
-function! Marvim_search()
+function! Marvim_search(mode)
 
     let l:macro_name = Marvim_input('Macro Search -> ')
 
@@ -429,7 +459,13 @@ function! Marvim_search()
 
         let l:macro_file = Marvim_ns_to_filename(l:macro_name)
 
-        call Marvim_file_run(l:macro_file)
+        if (a:mode == 'load')
+          let l:message = "Please enter the destination key for the macro ".l:macro_name.": "
+          let l:destination_key = input(message)
+          call Marvim_file_load(l:macro_file, l:destination_key)
+        else
+          call Marvim_file_run(l:macro_file)
+        endif
 
         echo 'Macro '.l:macro_name.' Run'
 
